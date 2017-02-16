@@ -1,3 +1,6 @@
+Simple To Do List App in the Browser
+====================================
+
 Welcome to the Gomix BETA
 =========================
 
