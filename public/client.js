@@ -21,18 +21,18 @@ var todoList = {
     var totalTodos = this.todos.length;
     var completedTodos = 0;
     
-    // Get number of completed todos
-    for (var i = 0; i < totalTodos; i++) {
-      if (this.todos[i].completed === true) {
+    // Get number of completed todos    
+    this.todos.forEach(function(todo) {
+      if (todo.completed === true) {
         completedTodos++;
       }
-    }
+    })
     
     // If everything is true, make everything false, otherwise
-    // make everything true
-      for (var e = 0; e < totalTodos; e++) {
-        this.todos[e].completed = completedTodos != totalTodos 
-      }
+    // make everything true    
+    this.todos.forEach(function(todo) {
+      todo.completed = completedTodos != totalTodos 
+    })
   }
 };
 
@@ -52,10 +52,8 @@ var handlers = {
     changeTodoTextInput.value = '';
     view.displayTodos();
   },
-  deleteTodo: function() {
-    var deleteTodoPositionInput = document.getElementById('deleteTodoPositionInput');
-    todoList.deleteTodo(deleteTodoPositionInput.valueAsNumber);
-    deleteTodoPositionInput.value = '';
+  deleteTodo: function(position) {
+    todoList.deleteTodo(position);
     view.displayTodos();
   },
   toggleCompleted: function() {
@@ -76,16 +74,32 @@ var view = {
     var todosUl = document.querySelector('ul');
     todosUl.innerHTML = '';
     
-    for (var i = 0; i < todoList.todos.length; i++) {
-          var todoLi = document.createElement('li');
-          var todo = todoList.todos[i];
-          var completion = todo.completed === true ? "(x)" : "( )"
-          todoLi.textContent = completion + " " + todo.todoText;
-          todosUl.appendChild(todoLi);
+    todoList.todos.forEach(function(todo, position) {
+      var todoLi = document.createElement('li');
+      var completion = todo.completed === true ? "(x)" : "( )";
+      todoLi.id = position;
+      todoLi.textContent = completion + " " + todo.todoText;
+      todoLi.appendChild(this.createDeleteButton());
+      todosUl.appendChild(todoLi);
+    }, this)
+  },
+  createDeleteButton: function() {
+    var deleteButton = document.createElement('button');
+    deleteButton.textContent = 'Delete';
+    deleteButton.className = 'deleteButton';
+    return deleteButton;
+  },
+  setUpEventListeners: function() {
+    var todosUl = document.querySelector('ul');
+
+    todosUl.addEventListener('click', function(event) {
+    var elementClicked = event.target;
+
+    if (elementClicked.className === 'deleteButton') {
+      handlers.deleteTodo(parseInt(elementClicked.parentNode.id));
     }
+    })
   }
 };
 
-
-
-
+view.setUpEventListeners();
